@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/localsources/auth_local_storage.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController? emailController;
   TextEditingController? passwordController;
+  GlobalKey<FormState> key = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -25,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     passwordController = TextEditingController();
 
     isLogin();
-    Future.delayed(Duration(seconds: 2));
+    Future.delayed(const Duration(seconds: 2));
     super.initState();
   }
 
@@ -53,71 +55,82 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Login App'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Email'),
-              controller: emailController,
-            ),
-            TextField(
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-              controller: passwordController,
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            BlocConsumer<LoginBloc, LoginState>(
-              listener: (context, state) {
-                if (state is LoginLoaded) {
-                  emailController!.clear();
-                  passwordController!.clear();
-                  //navigasi
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(backgroundColor: Colors.blue, content: Text('Success Login')),
-                  );
-
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const HomePage();
-                  }));
-                }
-              },
-              builder: (context, state) {
-                if (state is RegisterLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return ElevatedButton(
-                  onPressed: () {
-                    final requestModel = LoginModel(
-                      email: emailController!.text,
-                      password: passwordController!.text,
+        padding: const EdgeInsets.symmetric(horizontal: 28.0),
+        child: Form(
+          key: key,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  controller: emailController,
+                  validator: MultiValidator([
+                    RequiredValidator(
+                      errorText: "This field email is required",
+                    ),
+                    EmailValidator(
+                      errorText: 'Your email is invalid. Please check again your email',
+                    )
+                  ])),
+              TextFormField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'This field is required'),
+                controller: passwordController,
+                validator: RequiredValidator(errorText: 'This field email is required'),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              BlocConsumer<LoginBloc, LoginState>(
+                listener: (context, state) {
+                  if (state is LoginLoaded) {
+                    emailController!.clear();
+                    passwordController!.clear();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(backgroundColor: Colors.blue, content: Text('Success Login')),
                     );
 
-                    context.read<LoginBloc>().add(DoLoginEvent(loginModel: requestModel));
-                  },
-                  child: const Text('Login'),
-                );
-              },
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const RegisterPage();
-                }));
-              },
-              child: const Text(
-                'Belum Punya Akun? Register',
-                style: TextStyle(decoration: TextDecoration.underline),
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const HomePage();
+                    }));
+                  }
+                },
+                builder: (context, state) {
+                  if (state is RegisterLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      if (key.currentState?.validate() ?? false) {
+                        final requestModel = LoginModel(
+                          email: emailController!.text,
+                          password: passwordController!.text,
+                        );
+                        context.read<LoginBloc>().add(DoLoginEvent(loginModel: requestModel));
+                      }
+                    },
+                    child: const Text('Login'),
+                  );
+                },
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 16,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const RegisterPage();
+                  }));
+                },
+                child: const Text(
+                  'Belum Punya Akun? Register',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

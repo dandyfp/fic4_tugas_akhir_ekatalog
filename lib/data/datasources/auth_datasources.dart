@@ -38,4 +38,17 @@ class AuthDatasource {
     final result = ProfileResponseModel.fromJson(response.body);
     return result;
   }
+
+  Future<RegisterResponseModel> update(
+    RegisterModel registerModel,
+    int id,
+  ) async {
+    final response = await http.put(
+      Uri.parse('https://api.escuelajs.co/api/v1/products/$id'),
+      body: registerModel.toMap(),
+    );
+
+    final result = RegisterResponseModel.fromJson(response.body);
+    return result;
+  }
 }

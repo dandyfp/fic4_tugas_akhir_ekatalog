@@ -1,5 +1,6 @@
 import 'package:fic4_flutter_auth_bloc/bloc/product/create_product/create_product_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/bloc/product/get_all_product/get_all_product_bloc.dart';
+import 'package:fic4_flutter_auth_bloc/bloc/product/update_product/update_product_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/bloc/profile/profile_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/bloc/register/register_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/data/datasources/auth_datasources.dart';
@@ -45,6 +46,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => GetAllProductBloc(ProductDatasources()),
+        ),
+        BlocProvider(
+          create: (context) => UpdateProductBloc(ProductDatasources()),
         ),
       ],
       child: MaterialApp(
