@@ -1,7 +1,6 @@
 import 'package:fic4_flutter_auth_bloc/bloc/login/login_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/bloc/register/register_bloc.dart';
 import 'package:fic4_flutter_auth_bloc/data/models/request/login_model.dart';
-import 'package:fic4_flutter_auth_bloc/data/models/request/register_model.dart';
 import 'package:fic4_flutter_auth_bloc/presentation/pages/home_page.dart';
 import 'package:fic4_flutter_auth_bloc/presentation/pages/register_page.dart';
 import 'package:flutter/material.dart';
@@ -77,9 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                   passwordController!.clear();
                   //navigasi
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        backgroundColor: Colors.blue,
-                        content: Text('Success Login')),
+                    const SnackBar(backgroundColor: Colors.blue, content: Text('Success Login')),
                   );
 
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -100,9 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       password: passwordController!.text,
                     );
 
-                    context
-                        .read<LoginBloc>()
-                        .add(DoLoginEvent(loginModel: requestModel));
+                    context.read<LoginBloc>().add(DoLoginEvent(loginModel: requestModel));
                   },
                   child: const Text('Login'),
                 );
